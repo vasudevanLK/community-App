@@ -28,10 +28,16 @@ class _HomeScreenState extends State<HomeScreen> {
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ProfilePage()),
+          MaterialPageRoute(builder: (context) => StartRoomPage()),
         );
         break;
       case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => profilePage()),
+        );
+        break;
+      case 4:
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => StartRoomPage()),
@@ -173,13 +179,13 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(20.0),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.purple[100], // Light Purple Color
+              color: Color.fromARGB(255, 237, 192, 245), // Light Purple Color
               borderRadius: BorderRadius.circular(20.0),
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
               selectedItemColor: Theme.of(context).primaryColor,
-              unselectedItemColor: Colors.grey,
+              unselectedItemColor: const Color.fromARGB(255, 59, 59, 59),
               onTap: (index) {
                 setState(() {
                   _currentIndex = index;
@@ -198,9 +204,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   index: 1,
                 ),
                 _buildNavItem(
+                  icon: CupertinoIcons.plus,
+                  label: 'Create',
+                  index: 2,
+                ),
+                _buildNavItem(
                   icon: CupertinoIcons.person,
                   label: 'Profile',
-                  index: 2,
+                  index: 3,
                 ),
               ],
               backgroundColor: Colors
