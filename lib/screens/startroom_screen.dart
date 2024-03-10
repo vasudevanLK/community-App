@@ -1,98 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Community App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: StartRoomPage(),
-    );
-  }
-}
-
 class StartRoomPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Community App'),
-      ),
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.blue, Colors.green],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF3366FF), Color(0xFF00CCFF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              child: Text(
-                'Your Room',
-                style: TextStyle(
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Community App',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Add Room',
+                  style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Community Room',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF3366FF),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        buildRoomDetails(
+                          roomName: 'Digital Enthusiasts',
+                          roomId: '123456',
+                          address: '123 Main Street, Cityville',
+                          paid: true,
+                          authorNumbers: 3,
+                          dateTime: 'March 7, 2024 10:00 AM',
+                        ),
+                        SizedBox(height: 16),
+                        // Add input fields for user input
+                        InputFields(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Positioned(
-            top: 80,
-            left: 16,
-            right: 16,
-            child: Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 5,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Community Room',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 16),
-                  buildRoomDetails(
-                    roomName: 'Digital Enthusiasts',
-                    roomId: '123456',
-                    address: '123 Main Street, Cityville',
-                    paid: true,
-                    authorNumbers: 3,
-                    dateTime: 'March 7, 2024 10:00 AM',
-                  ),
-                  SizedBox(height: 16),
-                  // Add input fields for user input
-                  InputFields(),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -145,20 +134,18 @@ class _InputFieldsState extends State<InputFields> {
   TextEditingController roomIdController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController authorNumbersController = TextEditingController();
-  TextEditingController dateTimeController = TextEditingController();
 
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showCupertinoModalPopup(
+    DateTime? picked = await showDatePicker(
       context: context,
-      builder: (BuildContext builder) {
-        return _buildDatePicker(context);
-      },
+      initialDate: selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
     );
 
-    // ignore: unnecessary_null_comparison
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
@@ -167,14 +154,11 @@ class _InputFieldsState extends State<InputFields> {
   }
 
   Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay picked = await showCupertinoModalPopup(
+    TimeOfDay? picked = await showTimePicker(
       context: context,
-      builder: (BuildContext builder) {
-        return _buildTimePicker(context);
-      },
+      initialTime: selectedTime,
     );
 
-    // ignore: unnecessary_null_comparison
     if (picked != null && picked != selectedTime) {
       setState(() {
         selectedTime = picked;
@@ -182,72 +166,40 @@ class _InputFieldsState extends State<InputFields> {
     }
   }
 
-  Widget _buildDatePicker(BuildContext context) {
-    return Container(
-      height: 200,
-      child: CupertinoDatePicker(
-        mode: CupertinoDatePickerMode.date,
-        initialDateTime: selectedDate,
-        onDateTimeChanged: (DateTime newDate) {
-          setState(() {
-            selectedDate = newDate;
-          });
-        },
-      ),
-    );
-  }
-
-  Widget _buildTimePicker(BuildContext context) {
-    return Container(
-      height: 200,
-      child: CupertinoDatePicker(
-        mode: CupertinoDatePickerMode.time,
-        initialDateTime: DateTime(
-          selectedDate.year,
-          selectedDate.month,
-          selectedDate.day,
-          selectedTime.hour,
-          selectedTime.minute,
-        ),
-        onDateTimeChanged: (DateTime newDate) {
-          setState(() {
-            selectedTime = TimeOfDay(
-              hour: newDate.hour,
-              minute: newDate.minute,
-            );
-          });
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        TextField(
+        OutlinedInputField(
           controller: roomNameController,
-          decoration: InputDecoration(labelText: 'Room Name'),
+          label: 'Room Name',
         ),
-        TextField(
+        SizedBox(height: 8),
+        OutlinedInputField(
           controller: roomIdController,
-          decoration: InputDecoration(labelText: 'Room ID'),
+          label: 'Room ID',
         ),
-        TextField(
+        SizedBox(height: 8),
+        OutlinedInputField(
           controller: addressController,
-          decoration: InputDecoration(labelText: 'Address'),
+          label: 'Address',
         ),
-        TextField(
+        SizedBox(height: 8),
+        OutlinedInputField(
           controller: authorNumbersController,
-          decoration: InputDecoration(labelText: 'Author Numbers'),
+          label: 'Author Numbers',
           keyboardType: TextInputType.number,
         ),
+        SizedBox(height: 8),
         GestureDetector(
           onTap: () => _selectDate(context),
           child: AbsorbPointer(
-            child: TextField(
-              controller: dateTimeController,
-              decoration: InputDecoration(labelText: 'Date Time'),
+            child: OutlinedInputField(
+              controller: TextEditingController(
+                text: selectedDate.toString().split(' ')[0],
+              ),
+              label: 'Date',
             ),
           ),
         ),
@@ -255,13 +207,54 @@ class _InputFieldsState extends State<InputFields> {
         GestureDetector(
           onTap: () => _selectTime(context),
           child: AbsorbPointer(
-            child: TextField(
-              controller: dateTimeController,
-              decoration: InputDecoration(labelText: 'Time'),
+            child: OutlinedInputField(
+              controller: TextEditingController(
+                text: selectedTime.format(context),
+              ),
+              label: 'Time',
             ),
           ),
         ),
       ],
     );
   }
+}
+
+class OutlinedInputField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final TextInputType? keyboardType;
+
+  const OutlinedInputField({
+    Key? key,
+    required this.controller,
+    required this.label,
+    this.keyboardType,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+      ),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        keyboardType: keyboardType,
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: StartRoomPage(),
+  ));
 }

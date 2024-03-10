@@ -399,7 +399,7 @@ class _EventPageState extends State<EventPage> {
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => profilePage()),
+          MaterialPageRoute(builder: (context) => ProfilePage()),
         );
         break;
       case 3:

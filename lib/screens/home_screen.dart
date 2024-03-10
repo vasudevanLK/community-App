@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 3:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => profilePage()),
+          MaterialPageRoute(builder: (context) => ProfilePage()),
         );
         break;
       case 4:
